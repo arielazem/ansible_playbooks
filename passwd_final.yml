@@ -12,5 +12,5 @@
          name: vagrant
          state: present
          update_password: always
-         password: "$6$dvuGGC/wbuVdn7QR$jq0EbAATTQjKxAq0.ewgb1CphdxsmKj9Fa.p3pdfY1JDTQ450TO00zNWxlPlPHjILlRq0R7h5pS7WN1gxmhBo/"
+         password: "<passwd>"
          shell: /bin/bash
