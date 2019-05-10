@@ -1,0 +1,16 @@
+---
+ -
+   hosts: "all"
+   serial: 1
+   remote_user: vagrant
+   become: yes
+   gather_facts: false
+
+   tasks:
+      - name: Change passwd
+        user:
+         name: vagrant
+         state: present
+         update_password: always
+         password: "$6$dvuGGC/wbuVdn7QR$jq0EbAATTQjKxAq0.ewgb1CphdxsmKj9Fa.p3pdfY1JDTQ450TO00zNWxlPlPHjILlRq0R7h5pS7WN1gxmhBo/"
+         shell: /bin/bash

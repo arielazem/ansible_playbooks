@@ -1,0 +1,17 @@
+---
+ -
+   hosts: "all"
+   serial: 1
+   remote_user: vagrant
+   become: yes
+   gather_facts: false
+
+   tasks:
+      - name: Copy of commented file
+        copy:
+         src=/home/vagrant/ansible/playbooks/nomad.hcl.template.app
+         dest=/var/nomad/nomad.hcl.template
+         backup=yes
+
+      - name: Restart of service
+        service: name=nomad state=restarted

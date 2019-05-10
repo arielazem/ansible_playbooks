@@ -1,0 +1,41 @@
+[ncv]
+cobalt-infra1 ansible_ssh_host=cobalt-infra1
+cobalt-infra2 ansible_ssh_host=cobalt-infra2
+cobalt-infra3 ansible_ssh_host=cobalt-infra3
+
+[app]
+app300 ansible_ssh_host=app300
+app301 ansible_ssh_host=app301
+app302 ansible_ssh_host=app302
+
+[search]
+app601 ansible_ssh_host=app601
+app602 ansible_ssh_host=app602
+app603 ansible_ssh_host=app603
+
+[aj]
+cobalt-infra11 ansible_ssh_host=cobalt-infra11
+cobalt-infra12 ansible_ssh_host=cobalt-infra12
+
+[kafka1]
+app-kafka-broker01 ansible_ssh_host=app-kafka-broker01
+app-kafka-broker02 ansible_ssh_host=app-kafka-broker02
+app-kafka-broker03 ansible_ssh_host=app-kafka-broker03
+
+[kafka2]
+app-kafka-other01 ansible_ssh_host=app-kafka-other01
+app-kafka-other02 ansible_ssh_host=app-kafka-other02
+app-kafka-other03 ansible_ssh_host=app-kafka-other03
+
+[all:children]
+ncv
+app
+search
+kafka1
+kafka2
+
+[all_app:children]
+app
+search
+kafka1
+kafka2

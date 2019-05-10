@@ -1,0 +1,13 @@
+---
+ -
+   hosts: "all"
+   serial: 1
+   remote_user: vagrant
+   become: yes
+   gather_facts: false
+
+   tasks:
+      - name: Copy of commented file
+        copy:
+         src=/home/vagrant/ansible/playbooks/reclaimep
+         dest=/home/vagrant/reclaimep

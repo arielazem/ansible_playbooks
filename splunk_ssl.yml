@@ -1,0 +1,29 @@
+---
+ -
+   hosts: "aj"
+   serial: 1
+   remote_user: vagrant
+   become: yes
+   gather_facts: false
+
+   tasks:
+      - name: Create aribacerts directory
+        file:
+         path: /opt/splunkforwarder/etc/auth/aribacerts
+         state: directory
+         mode: "0755"
+      - name: Copy of PEM certificate
+        copy:
+         src=/home/vagrant/ansible/playbooks/spkmaster1.sc1-ms.ariba.com.servercert.pem
+         dest=/opt/splunkforwarder/etc/auth/aribacerts/spkmaster1.sc1-ms.ariba.com.servercert.pem
+      - name: Copy of CA certificate
+        copy:
+         src=/home/vagrant/ansible/playbooks/rootcert.pem
+         dest=/opt/splunkforwarder/etc/auth/aribacerts/rootcert.pem
+      - name: Copy of outputs.conf
+        copy:
+         src=/home/vagrant/ansible/playbooks/outputs.conf
+         dest=/opt/splunkforwarder/etc/system/local/outputs.conf
+         backup=yes
+      - name: Restart of splunk service
+        service: name=splunk state=restarted

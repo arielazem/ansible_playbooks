@@ -1,0 +1,24 @@
+---
+ -
+   hosts: "all"
+   serial: 1
+   remote_user: vagrant
+   become: yes
+   gather_facts: false
+
+   tasks:
+      - name: Removes comma (particular character)
+        replace:
+         backup=yes
+         path=/var/cobalt/systemd_scripts/datadog_var_substitute.sh
+         regexp=','
+
+      - name: Remove additional DD tags in /etc/dd-agent/datadog.conf.template
+        lineinfile:
+         backup=yes
+         path=/etc/dd-agent/datadog.conf.template
+         regexp='^(.*)role:datadog(.*)$'
+         line='tags{{':'}} @@DD_TAGS@@'
+
+      - name: Restart service
+        service: name=datadog-agent state=restarted

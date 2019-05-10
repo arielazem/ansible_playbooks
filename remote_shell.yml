@@ -1,0 +1,11 @@
+---
+ -
+   hosts: "all"
+   serial: 1
+   remote_user: vagrant
+   become: yes
+   gather_facts: false
+
+   tasks:
+      - name: Execution of command in remote server
+        shell: grep -Ri 10.169.16.153 /var/consul/services/
