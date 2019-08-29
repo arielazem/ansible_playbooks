@@ -25,6 +25,7 @@
            - "BIOS: {{var_dmidecode_XL170r_bios|default(omit)}}"
            - "Firmware: {{var_dmidecode_XL170r_firmware|default(omit)}}"
        when: ansible_product_name == "ProLiant XL170r Gen9"
+       tags: test1
 
      - name: test2
        block:
@@ -43,3 +44,4 @@
 #        when: var_dmidecode_XL270d_bios <= "2.44" or var_dmidecode_XL270d_firmware <= "2.0"
 #       - debug: msg="Firmware: {{var_dmidecode_XL270d_firmware|default(omit)}}"
        when: ansible_product_name == "ProLiant XL270d Gen9"
+       tags: test2
