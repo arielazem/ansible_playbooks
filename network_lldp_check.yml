@@ -1,0 +1,40 @@
+---
+ -
+   hosts: "all_app"
+   strategy: free
+   become: yes
+   become_user: root
+   become_method: sudo
+   gather_facts: True
+
+   tasks:
+      - name: Enable eth2 and eth3 interfaces
+        shell: ifconfig eth2 up; ifconfig eth3 up
+
+      - name: Force eth3 to become active on bond1
+        shell: ifdown eth2; sleep 2; ifup eth2; sleep 5
+
+      - name: Check active NIC on bond1
+        shell: grep Active /proc/net/bonding/bond1
+        register: cmd
+      - debug: msg="{{ cmd.stdout.split('\n') }}"
+
+      - name: Discover properties of each interface
+        script: network_lldp_dis.sh eth2
+        register: llcmd
+      - debug:
+          msg="{{ llcmd.stdout.split('\n') }}"
+
+      - name: Force eth2 to become active on bond1
+        shell: ifdown eth3; sleep 2; ifup eth3; sleep 5
+
+      - name: Check active NIC on bond1
+        shell: grep Active /proc/net/bonding/bond1
+        register: cmd
+      - debug: msg="{{ cmd.stdout.split('\n') }}"
+
+      - name: Discover properties of each interface
+        script: network_lldp_dis.sh eth3
+        register: llcmd
+      - debug:
+          msg="{{ llcmd.stdout.split('\n') }}"

@@ -1,0 +1,31 @@
+---
+-
+   hosts: app303
+   remote_user: vagrant
+   become: yes
+   gather_facts: yes
+
+   tasks:
+     - shell: ipmitool lan print | grep 'IP'
+       register: ipmitool_ilo_ip
+     - shell: dig +short ilo.{{ansible_fqdn}}
+       register: dig_ilo_ip
+     - vars:
+       var_ipmitool_ilo_ip: ipmitool_ilo_ip.stdout_lines[1].split(':')[1]
+     - vars:
+       var_dig_ilo_ip: dig_ilo_ip.stdout_lines
+
+     - shell: echo "{{var_ipmitool_ilo_ip}} is equal to {{var_dig_ilo_ip}}"
+       when: var_ipmitool_ilo_ip == var_dig_ilo_ip
+       register: test
+
+     - shell: echo "{{var_ipmitool_ilo_ip}} is not equal to {{var_dig_ilo_ip}}"
+       when: var_ipmitool_ilo_ip != var_dig_ilo_ip
+       register: test2
+
+     - debug: msg="{{test.stdout}}"
+     - debug: msg="{{test2.stdout}}"
+
+     #- debug: msg="{{ilo.stdout.split('\n')}}"
+
+     #- debug: msg="{{dig.stdout}}"

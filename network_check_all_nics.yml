@@ -1,0 +1,27 @@
+---
+ -
+   hosts: "all"
+   serial: 1
+   become: yes
+   become_user: root
+   remote_user: vagrant
+   become_method: sudo
+   gather_facts: false
+   ignore_errors: yes
+
+   tasks:
+     - name: SysInfo
+       shell: dmidecode -t1 | egrep 'Manufacturer|Product|Serial'
+       register: sys
+
+     - name: Executes command remotely
+       shell: ifconfig {{  item  }} up; ethtool {{  item  }} | egrep 'Settings|Link'; ip a s {{ item }} | grep link | awk '{print $2}'; lldptool -n -t -i {{  item  }} | egrep 'Leaf|topology';
+       loop:
+         - "eth0"
+         - "eth1"
+         - "eth2"
+         - "eth3"
+       register: cmd
+
+     - debug: msg="{{ sys.stdout.split('\n') }}"
+     - debug: msg="{{ cmd.results|map(attribute='stdout_lines')|list }}"

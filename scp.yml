@@ -7,7 +7,12 @@
    gather_facts: false
 
    tasks:
-      - name: Copy of commented file
+      - name: Copy of file
         copy:
          src=/home/vagrant/ansible/playbooks/reclaimep
          dest=/home/vagrant/reclaimep
+
+      - name: Change of permissinos
+        file:
+         path=/home/vagrant/reclaimep
+         mode=777

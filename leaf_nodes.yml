@@ -1,18 +1,18 @@
 ---
- -
-   hosts: "ncv"
-   serial: 1
-   remote_user: vagrant
-   become: yes
-   gather_facts: false
+-
+     hosts: "ncv"
+     serial: 1
+     remote_user: vagrant
+     become: yes
+     gather_facts: false
 
-   tasks:
-      - name: Replace line that matches regex
-        lineinfile:
-         backup=yes
-         path=/etc/service/cobaltenv
-         regexp='^export APIC_LEAF_NODE'
-         line='export APIC_LEAF_NODE="topology/pod-1/node-1061,topology/pod-1/node-1062,topology/pod-1/node-1071,topology/pod-1/node-1072,topology/pod-1/node-1081,topology/pod-1/node-1082"'
+     tasks:
+        - name: Replace line that matches regex
+          lineinfile:
+           backup=yes
+           path=/etc/service/cobaltenv
+           regexp='^export APIC_LEAF_NODE'
+           line='export APIC_LEAF_NODE="topology/pod-1/node-1061,topology/pod-1/node-1062,topology/pod-1/node-1071,topology/pod-1/node-1072,topology/pod-1/node-1081,topology/pod-1/node-1082"'
 
-      - name: Restart aci_gw service
-        service: name=aci_gw state=restarted
+        - name: Restart aci_gw service
+          service: name=aci_gw state=restarted

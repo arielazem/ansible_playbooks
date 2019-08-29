@@ -1,0 +1,14 @@
+---
+ -
+   hosts: "all"
+   serial: 1
+   remote_user: vagrant
+   become: yes
+   gather_facts: false
+
+   tasks:
+      - name: Executes command remotely
+        shell: ethtool eth0 | grep Link; ethtool eth1 | grep Link; ethtool eth2 | grep Link; ethtool eth3 | grep Link; echo "\n";
+        register: cmd
+
+      - debug: msg="{{ cmd.stdout.split('\n')[:-1] }}"

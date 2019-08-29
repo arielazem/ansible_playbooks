@@ -1,0 +1,16 @@
+---
+ -
+   hosts: all
+   remote_user: vagrant
+   become: yes
+   ignore_errors: yes
+   gather_facts: false
+
+   tasks:
+     - name: stop ntp
+       service: name=ntp state=stopped
+
+     - shell: ntpd -gq
+
+     - name: start ntp
+       service: name=ntp state=started

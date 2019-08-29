@@ -1,0 +1,72 @@
+---
+ -
+   hosts: "all_app"
+   serial: 1
+   become: yes
+   become_user: root
+   become_method: sudo
+
+   tasks:
+     - name: Getting nomad ID for {{ansible_hostname}}
+       shell: nomad node-status -address=http://{{ansible_hostname}}:4646 | grep {{ansible_hostname}} | awk '{print $1}'
+       register: cmd
+
+     - name: Draining {{ansible_hostname}}
+       shell: nomad node-drain -address=http://{{ansible_hostname}}:4646 -enable -yes {{cmd.stdout}}
+
+     - name: Getting nomad status for {{ansible_hostname}}
+       shell: nomad node-status -address=http://{{ansible_hostname}}:4646 | grep {{ansible_hostname}}
+       register: nomad_status
+
+     - debug: msg="{{nomad_status.stdout}}"
+
+     - name: Waiting for containers to be migrated
+       shell: docker ps | grep -v CONTAINER
+       ignore_errors: yes
+       register: docker_ps
+       retries: 6
+       delay: 10
+       until: docker_ps.rc > 0
+       failed_when: docker_ps.rc == 0
+
+     - debug:
+         msg:
+         - "containers not migrated after 1 minute(s):"
+         - "{{docker_ps.stdout_lines|list}}"
+
+     - name: Restarting nomad {{ansible_hostname}}
+       service: name=nomad state=restarted
+
+     - name: Restarting docker {{ansible_hostname}}
+       service: name=docker state=restarted
+
+     - name: Restarting consul1 {{ansible_hostname}}
+       service: name=consul state=restarted
+
+     - name: Restarting consul2 {{ansible_hostname}}
+       service: name=consul2 state=restarted
+
+     - name: Restarting netplugin {{ansible_hostname}}
+       service: name=netplugin state=restarted
+
+     - name: Waiting for services to start
+       shell:  nomad node-status -address=http://{{ansible_hostname}}:4646 | grep {{ansible_hostname}} | grep ready && consul members -http-addr=http://{{ansible_hostname}}:8500 | grep {{ansible_hostname}} | grep alive && consul members -http-addr=http://{{ansible_hostname}}:9500 | grep {{ansible_hostname}} | grep alive && service netplugin status | grep runn && service docker status | grep runn
+       ignore_errors: yes
+       register: services_check
+       retries: 6
+       delay: 10
+       until: services_check.rc == 0
+
+     - name: Services failed to start
+       fail:
+         msg:
+         - "Services failed to start"
+       when: services_check.rc > 0
+
+     - debug: msg="All services are healthy"
+
+     - name: Removing drain for {{ansible_hostname}}
+       shell: nomad node-drain -address=http://{{ansible_hostname}}:4646 -disable -yes {{cmd.stdout}}
+
+     - pause:
+        minutes: 2
