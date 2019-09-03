@@ -1,0 +1,54 @@
+---
+ - hosts: all
+   gather_facts: yes
+   become: yes
+   remote_user: vagrant
+   ignore_errors: yes
+   tasks:
+   - name: Classify nodes by server model
+     group_by:
+      key: server_{{ansible_product_name|replace(' ','_')}}
+
+ - hosts: server_ProLiant_XL170r_Gen9
+   gather_facts: yes
+   become: yes
+   remote_user: vagrant
+   ignore_errors: yes
+   vars:
+     var_ProLiant_XL170r_Gen9:
+       bios: "2.50"
+       firmware: "2.50"
+   tasks:
+     - shell: dmidecode -t1 | egrep 'Manufacturer|Product Name|Serial Number'; dmidecode -t bios | grep -i revision
+       register: dmidecode
+     - set_fact:
+        outdated="UPDATE FIRMWARE!!!!!"
+       when: dmidecode.stdout_lines[4].split(':')[1]|trim|default(omit) == var_ProLiant_XL170r_Gen9.bios and dmidecode.stdout_lines[4].split(':')[1]|trim|default(omit) == var_ProLiant_XL170r_Gen9.firmware
+     - debug:
+        msg:
+        - "{{ansible_product_name}}"
+        - "{{outdated|default(omit)}}"
+        - "BIOS: {{dmidecode.stdout_lines[4].split(':')[1]|trim|default(omit)}}"
+        - "Firmware: {{dmidecode.stdout_lines[4].split(':')[1]|trim|default(omit)}}"
+
+ - hosts: server_ProLiant_XL270d_Gen9
+   gather_facts: yes
+   become: yes
+   remote_user: vagrant
+   ignore_errors: yes
+   vars:
+     var_ProLiant_XL270d_Gen9:
+      bios: "2.44"
+      firmware: "2.53"
+   tasks:
+     - shell: dmidecode -t1 | egrep 'Manufacturer|Product Name|Serial Number'; dmidecode -t bios | grep -i revision
+       register: dmidecode
+     - set_fact:
+        outdated="UPDATE FIRMWARE!!!!!"
+       when: dmidecode.stdout_lines[4].split(':')[1]|trim|default(omit) == var_ProLiant_XL270d_Gen9.bios and dmidecode.stdout_lines[4].split(':')[1]|trim|default(omit) == var_ProLiant_XL270d_Gen9.firmware
+     - debug:
+        msg:
+        - "{{ansible_product_name}}"
+        - "{{outdated|default(omit)}}"
+        - "BIOS: {{dmidecode.stdout_lines[4].split(':')[1]|trim|default(omit)}}"
+        - "Firmware: {{dmidecode.stdout_lines[4].split(':')[1]|trim|default(omit)}}"
