@@ -1,6 +1,6 @@
 ---
 -
-   hosts: app303
+   hosts: all
    remote_user: vagrant
    become: yes
    gather_facts: yes
@@ -10,22 +10,18 @@
        register: ipmitool_ilo_ip
      - shell: dig +short ilo.{{ansible_fqdn}}
        register: dig_ilo_ip
-     - vars:
-       var_ipmitool_ilo_ip: ipmitool_ilo_ip.stdout_lines[1].split(':')[1]
-     - vars:
-       var_dig_ilo_ip: dig_ilo_ip.stdout_lines
 
-     - shell: echo "{{var_ipmitool_ilo_ip}} is equal to {{var_dig_ilo_ip}}"
-       when: var_ipmitool_ilo_ip == var_dig_ilo_ip
-       register: test
+     - set_fact:
+        resulte='EQUAL'
+       when: ipmitool_ilo_ip.stdout_lines[1].split(':')[1]|trim == dig_ilo_ip.stdout
 
-     - shell: echo "{{var_ipmitool_ilo_ip}} is not equal to {{var_dig_ilo_ip}}"
-       when: var_ipmitool_ilo_ip != var_dig_ilo_ip
-       register: test2
+     - set_fact:
+        resultne='NOT EQUAL!!!!!'
+       when: ipmitool_ilo_ip.stdout_lines[1].split(':')[1]|trim != dig_ilo_ip.stdout
 
-     - debug: msg="{{test.stdout}}"
-     - debug: msg="{{test2.stdout}}"
-
-     #- debug: msg="{{ilo.stdout.split('\n')}}"
-
-     #- debug: msg="{{dig.stdout}}"
+     - debug:
+        msg:
+        - "{{resulte|default(omit)}}"
+        - "{{resultne|default(omit)}}"
+        - "ipmitool lan print: {{ipmitool_ilo_ip.stdout_lines[1].split(':')[1]|trim}}"
+        - "dig output: {{dig_ilo_ip.stdout}}"
