@@ -1,0 +1,46 @@
+---
+#- hosts: cobalt-infra1
+#  remote_user: vagrant
+#  become: yes
+#  gather_facts: false
+
+#  tasks:
+#   - name: Nomad purge search builds
+#     shell: nomad status -address=http://{{ansible_hostname}}:4646 | grep search- | awk '{print $1}' | xargs -n1 nomad stop -address=http://{{ansible_hostname}}:4646 -purge
+#
+- hosts: "search"
+  remote_user: vagrant
+  become: yes
+  tasks:
+  - name: Delete and stop all services
+    block:
+    - name: Stop docker service
+      service: name=docker state=stopped
+    - name: Stop nomad service
+      service: name=nomad state=stopped
+    - name: Stop consul service
+      service: name=consul state=stopped
+    - name: Stop consul2 service
+      service: name=consul2 state=stopped
+    - name: Stop netplugin service
+      service: name=netplugin state=stopped
+    tags: stop
+
+  - name: Upgrade docker
+    block:
+    - include: upgrade_docker.yml
+    tags: upgrade
+
+  - name: Start all services
+    block:
+    - name: Start docker service
+      service: name=docker state=started
+    - name: Start nomad service
+      service: name=nomad state=started
+    - name: Start consul service
+      service: name=consul state=started
+    - name: Start consul2 service
+      service: name=consul2 state=started
+    - name: Start netplugin service
+      service: name=netplugin state=started
+    tags: start
