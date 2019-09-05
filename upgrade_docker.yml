@@ -1,0 +1,30 @@
+---
+ - name: Replace line that matches regex
+   copy: src={{ item.src }} dest={{ item.dest }}
+   with_items:
+    - { src: 'binaries/containerd.io_1.2.4-1_amd64.deb', dest: '/home/vagrant' }
+    - { src: 'binaries/docker-ce-cli_18.09.3_3-0_ubuntu-xenial_amd64.deb', dest: '/home/vagrant' }
+    - { src: 'binaries/docker-ce_18.09.3_3-0_ubuntu-xenial_amd64.deb', dest: '/home/vagrant' }
+
+ - name: Upgrade docker packages
+   shell: "dpkg -i /home/vagrant/docker-ce_18.09.3_3-0_ubuntu-xenial_amd64.deb  /home/vagrant/docker-ce-cli_18.09.3_3-0_ubuntu-xenial_amd64.deb /home/vagrant/containerd.io_1.2.4-1_amd64.deb"
+
+ - name: Stopping docker as it starts right after install
+   service: name=docker state=stopped
+
+ - name: Replace line that matches regex
+   lineinfile:
+    backup=yes
+    path=/var/cobalt/systemd_scripts/docker-service.sh
+    regexp='^DOCKER_OPTS=*'
+    line='DOCKER_OPTS="--dns-opt=\"ndots:3\" -H unix:///var/run/docker.sock --selinux-enabled --userns-remap=default --cluster-store=consul://$HOSTIP:9500"'
+
+ - name: Replace line that matches regex
+   lineinfile:
+    backup=yes
+    path=/lib/systemd/system/docker.service
+    regexp='^ExecStart*'
+    line='ExecStart=/bin/bash /var/cobalt/systemd_scripts/docker-service.sh'
+
+ - name: Reload docker daemon units
+   shell: "systemctl daemon-reload"
