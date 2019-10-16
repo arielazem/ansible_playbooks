@@ -1,0 +1,9 @@
+---
+ -
+   hosts: search
+   remote_user: vagrant
+   become: yes
+
+   tasks:
+     - shell: cp /var/log/consul.log /var/log/consul.log.2; cp /var/log/consul2.log /var/log/consul2.log.2; cp /var/log/nomad.log /var/log/nomad.log.2; cp /var/log/docker.log /var/log/docker.log.2; cp /var/log/netplugin.log /var/log/netplugin.log.2;
+     - shell: ">/var/log/consul.log; >/var/log/consul2.log; >/var/log/nomad.log; >/var/log/docker.log; >/var/log/netplugin.log;"

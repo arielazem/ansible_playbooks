@@ -1,0 +1,10 @@
+---
+ -
+   hosts: cobalt-infra1
+   remote_user: vagrant
+   become: yes
+   tasks:
+    - lineinfile:
+       path: /var/nomad/nomad.hcl.template
+       insertafter: bootstrap_expect
+       line: '    heartbeat_grace: "10s"'

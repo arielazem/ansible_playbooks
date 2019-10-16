@@ -38,8 +38,8 @@
    ignore_errors: yes
    vars:
      var_ProLiant_XL270d_Gen9:
-      bios: "2.44"
-      firmware: "2.53"
+      bios: "2.72"
+      firmware: "2.72"
    tasks:
      - shell: dmidecode -t1 | egrep 'Manufacturer|Product Name|Serial Number'; dmidecode -t bios | grep -i revision
        register: dmidecode

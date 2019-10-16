@@ -12,7 +12,7 @@
   remote_user: vagrant
   become: yes
   tasks:
-  - name: Delete and stop all services
+  - name: Stop all services
     block:
     - name: Stop docker service
       service: name=docker state=stopped
