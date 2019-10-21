@@ -1,0 +1,16 @@
+---
+ -
+   hosts: "app"
+   remote_user: vagrant
+   become: yes
+   gather_facts: false
+   vars:
+    var_build: "V-de375cd-172"
+
+   tasks:
+      - name: Execution of any command
+        shell: docker pull docker-repo.service.mu.cn2-ms.ariba.com/ariba-openapi/{{item.task}}:{{var_build}}
+        loop:
+         - { task: 'apiportal' }
+         - { task: 'apiserver' }
+         - { task: 'openapi-nginx' }
